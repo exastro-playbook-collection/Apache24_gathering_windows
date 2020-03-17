@@ -1,0 +1,11 @@
+---
+
+- name: Remove old data
+  file:
+    path: "{{ VAR_Apache_gathering_dest }}/{{ inventory_hostname }}/Apache24_gathering_windows"
+    state: absent
+  delegate_to: localhost
+  become: no
+
+- name: include tasks
+  include_tasks: gather.yml

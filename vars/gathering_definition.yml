@@ -1,0 +1,9 @@
+---
+command: # ファイル収集
+  - cat '{{ VAR_Apache24_WIN_path }}\conf\httpd.conf'
+  - cat '{{ VAR_Apache24_WIN_path }}\conf\extra\httpd-default.conf'
+  - cat '{{ VAR_Apache24_WIN_path }}\conf\extra\httpd-info.conf'
+  - cat '{{ VAR_Apache24_WIN_path }}\conf\extra\httpd-mpm.conf'
+  - cat '{{ VAR_Apache24_WIN_path }}\conf\extra\proxy.conf'
+  - (gwmi win32_service|?{$_.name -eq "Apache2.4"}).startmode
+  - Get-Service "Apache2.4"

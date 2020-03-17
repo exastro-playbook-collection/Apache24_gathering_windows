@@ -1,0 +1,80 @@
+---
+# Check VAR_Apache24_WIN_path
+- name: Check Apache24 is already installed
+  block:
+  - name: Determine if the parameter VAR_Apache24_WIN_path is correct
+    win_stat: path="{{ VAR_Apache24_WIN_path }}"
+    register: status
+
+  - name: Prompt error message about VAR_Apache24_WIN_path
+    fail:
+      msg: "{{ VAR_Apache24_WIN_path }} does not exist"
+    when: not status.stat.exists
+
+# Check {{ VAR_Apache24_WIN_path }}\\conf\\httpd.conf
+  - name: Check httpd.conf is exists
+    win_stat: path="{{ VAR_Apache24_WIN_path }}\\conf\\httpd.conf"
+    register: status
+
+  - name: Prompt error message about httpd.conf
+    fail:
+      msg: "{{ VAR_Apache24_WIN_path }}\\conf\\httpd.conf does not exist"
+    when: not status.stat.exists
+
+# Check {{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-default.conf
+  - name: Check httpd-default.conf is exists
+    win_stat: path="{{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-default.conf"
+    register: status
+
+  - name: Prompt error message about httpd-default.conf
+    fail:
+      msg: "{{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-default.conf does not exist"
+    when: not status.stat.exists
+
+# Check {{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-info.conf
+  - name: Check httpd-info.conf is exists
+    win_stat: path="{{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-info.conf"
+    register: status
+
+  - name: Prompt error message about httpd-info.conf
+    fail:
+      msg: "{{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-info.conf does not exist"
+    when: not status.stat.exists
+
+# Check {{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-mpm.conf
+  - name: Check httpd-mpm.conf is exists
+    win_stat: path="{{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-mpm.conf"
+    register: status
+
+  - name: Prompt error message about httpd-mpm.conf
+    fail:
+      msg: "{{ VAR_Apache24_WIN_path }}\\conf\\extra\\httpd-mpm.conf does not exist"
+    when: not status.stat.exists
+
+- name: check param VAR_Apache_gathering_dest
+  fail:
+    msg: "Parameter VAR_Apache_gathering_dest cannot be NULL."
+  when: (VAR_Apache_gathering_dest is none) or (VAR_Apache_gathering_dest == '')
+
+- name: import roles
+  import_role:
+    name: '{{ playbook_dir }}/roles/gathering'
+  vars:
+    VAR_gathering_definition_role_path: "{{ playbook_dir }}/roles/Apache24_gathering_windows"
+    VAR_gathering_label: "Apache24_gathering_windows"
+
+- name: Copy data
+  copy:
+    src: "{{ gathered_data_dest }}/"
+    dest: "{{ VAR_Apache_gathering_dest }}/{{ inventory_hostname }}/Apache24_gathering_windows"
+  delegate_to: localhost
+  become: no
+
+- name: create the input_parameter_install.j2 for Apache24 install
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ VAR_Apache_gathering_dest }}/{{ inventory_hostname }}/Apache24_gathering_windows/{{ item }}"
+  delegate_to: localhost
+  with_items:
+    - "input_parameter_install"
+  become: no
